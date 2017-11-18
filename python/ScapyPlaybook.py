@@ -1,4 +1,4 @@
-
+import unittest
 
 class ScapyPlaybook():
 	def __init__(self):
@@ -9,3 +9,4 @@ class ScapyPlaybook():
 
 	def setupPlaybook(self):
 		#put stuff here
+

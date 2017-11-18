@@ -1,4 +1,5 @@
-import ScapyServer
+import unittest
+from ScapyServer import ScapyServer
 
 class VulnerabilityChecker():
 	def __init__(self):
