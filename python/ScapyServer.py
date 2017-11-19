@@ -4,30 +4,30 @@ from ScapyPlaybook import ScapyPlaybook
 
 """
 RELATED SCAPY MODES
-	Dot11      		: <member 'name' of 'Packet' objects>
-	Dot11ATIM  		: <member 'name' of 'Packet' objects>
-	Dot11AssoReq 	: <member 'name' of 'Packet' objects>
-	Dot11AssoResp 	: <member 'name' of 'Packet' objects>
-	Dot11Auth  		: <member 'name' of 'Packet' objects>
-	Dot11Beacon 	: <member 'name' of 'Packet' objects>
-	Dot11Deauth 	: <member 'name' of 'Packet' objects>
-	Dot11Disas 		: <member 'name' of 'Packet' objects>
-	Dot11Elt   		: <member 'name' of 'Packet' objects>
-	Dot11ProbeReq 	: <member 'name' of 'Packet' objects>
-	Dot11ProbeResp 	: <member 'name' of 'Packet' objects>
-	Dot11QoS   		: <member 'name' of 'Packet' objects>
-	Dot11ReassoReq 	: <member 'name' of 'Packet' objects>
-	Dot11ReassoResp : <member 'name' of 'Packet' objects>
+    Dot11           : <member 'name' of 'Packet' objects>
+    Dot11ATIM       : <member 'name' of 'Packet' objects>
+    Dot11AssoReq    : <member 'name' of 'Packet' objects>
+    Dot11AssoResp   : <member 'name' of 'Packet' objects>
+    Dot11Auth       : <member 'name' of 'Packet' objects>
+    Dot11Beacon     : <member 'name' of 'Packet' objects>
+    Dot11Deauth     : <member 'name' of 'Packet' objects>
+    Dot11Disas      : <member 'name' of 'Packet' objects>
+    Dot11Elt        : <member 'name' of 'Packet' objects>
+    Dot11ProbeReq   : <member 'name' of 'Packet' objects>
+    Dot11ProbeResp  : <member 'name' of 'Packet' objects>
+    Dot11QoS        : <member 'name' of 'Packet' objects>
+    Dot11ReassoReq  : <member 'name' of 'Packet' objects>
+    Dot11ReassoResp : <member 'name' of 'Packet' objects>
 
 CVE List
-	1-Key Re-Install using Fast Transmit 
-	2-Already In Use Group Key Re-Install 
-	3-Extended Protection of WNM-Sleep Mode
-	4-Prevent Zeroed Key Install
-	5-Generate New Nonce When Rekeying PTK
-	6-Reject TPK-TK Reconfiguration
-	7-Ignore WNM-Sleep Mode Response without pending request
-	8-Do not allow multiple Reassociation Response frames
+    1-Key Re-Install using Fast Transmit 
+    2-Already In Use Group Key Re-Install 
+    3-Extended Protection of WNM-Sleep Mode
+    4-Prevent Zeroed Key Install
+    5-Generate New Nonce When Rekeying PTK
+    6-Reject TPK-TK Reconfiguration
+    7-Ignore WNM-Sleep Mode Response without pending request
+    8-Do not allow multiple Reassociation Response frames
 
 PACKET BUILDING NOTES:
 [From Scapy FAQs]
@@ -51,10 +51,10 @@ dst=127.0.0.1 options='' |<ICMP  type=echo-reply code=0 chksum=0xffff id=0x0 seq
 """
 
 class ScapyServer():
-	def __init__(self):
-		#Build ScapyPlaybooks here
-		playbook_list = []
-		playboook_list.append(scapyPlaybook(Params, For, P1))
+    def __init__(self):
+        #Build ScapyPlaybooks here
+        playbook_list = []
+        playboook_list.append(scapyPlaybook(Params, For, P1))
 
-	def runPlaybook(self):
-		#put stuff here
+    def runPlaybook(self):
+        #put stuff here
