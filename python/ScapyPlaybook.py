@@ -42,7 +42,7 @@ PLAY FUNCTIONALITY:
 
 PACKET BUILDING NOTES:
 [From Scapy FAQs]
-I can’t ping 127.0.0.1. Scapy does not work with 127.0.0.1 or on the loopback interface
+I can't ping 127.0.0.1. Scapy does not work with 127.0.0.1 or on the loopback interface
 ---------------------------------------------------------------------------------------------------------
 The loopback interface is a very special interface. Packets going through it are not really 
 assembled and disassembled. The kernel routes the packet to its destination while it is still 
@@ -74,7 +74,7 @@ class ScapyPlaybook():
             if play["MODE"] == 0:
                 response = sr1(play["PACKET"])
                 play["HANDLER"](response)
-            else play["MODE"] == 1:
+            elif play["MODE"] == 1:
                 if play["FILTER"] is not None:
                     sniff(filter=play["FILTER"], iface="lo", prn=play["HANDLER"])
                 else:
@@ -122,5 +122,5 @@ if __name__ == "__main__":
     flags.append((0, 8))
 
 
-    play = ScapyPlaybook(flags)
+    play = ScapyPlaybook(flags, "lo")
     play.readPCAP("example-ft.pcapng")
