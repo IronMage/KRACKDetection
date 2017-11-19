@@ -32,20 +32,53 @@ CVE List
 
 NOTE:
 	The send command for scapy returns the answer(s?) to the TX
+
+PLAY FUNCTIONALITY:
+	LAYOUT (DICTIONARY?):
+		MODE 		: Send or Recv (0 or 1)
+		FILTER 		: OPTIONAL -- Used to define filter for sniffing
+		PACKET 		: Packet to be sent to interface
+		HANDLER 	: Function to handle the response after sending packet
+
+PACKET BUILDING NOTES:
+[From Scapy FAQs]
+I can’t ping 127.0.0.1. Scapy does not work with 127.0.0.1 or on the loopback interface
+---------------------------------------------------------------------------------------------------------
+The loopback interface is a very special interface. Packets going through it are not really 
+assembled and disassembled. The kernel routes the packet to its destination while it is still 
+stored an internal structure. What you see with tcpdump -i lo is only a fake to make you 
+think everything is normal. The kernel is not aware of what Scapy is doing behind his back, 
+so what you see on the loopback interface is also a fake. Except this one did not come from a 
+local structure. Thus the kernel will never receive it.
+
+In order to speak to local applications, you need to build your packets one layer upper, using 
+a PF_INET/SOCK_RAW socket instead of a PF_PACKET/SOCK_RAW (or its equivalent on other systems than Linux):
+>>> conf.L3socket
+<class __main__.L3PacketSocket at 0xb7bdf5fc>
+>>> conf.L3socket=L3RawSocket
+>>> sr1(IP(dst="127.0.0.1")/ICMP())
+<IP  version=4L ihl=5L tos=0x0 len=28 id=40953 flags= frag=0L ttl=64 proto=ICMP chksum=0xdce5 src=127.0.0.1 
+dst=127.0.0.1 options='' |<ICMP  type=echo-reply code=0 chksum=0xffff id=0x0 seq=0x0 |>>
 """
 
 class ScapyPlaybook():
 	def __init__(self, flags, interface):
 		#Put stuff here
-		self.allowed_flags = flags
-		self.play_list = []
-		self.interface = 
+		self.play_list 		= []
+		self.allowed_flags 	= flags
+		self.interface 		= interface
 
 	def run(self):
 		for play in self.play_list:
-			if play[MODE] == 0:
-
-			if play[MODE] == 1:
+			#sr1 is used only for layer 3 (IP, ARP, etc).  Returns only one response packet
+			if play["MODE"] == 0:
+				response = sr1(play["PACKET"])
+				play["HANDLER"](response)
+			else play["MODE"] == 1:
+				if play["FILTER"] is not None:
+					sniff(filter=play["FILTER"], prn=play["HANDLER"])
+				else:
+					sniff(filter="", iface="lo")
 
 
 	def addPlay(self, play):
