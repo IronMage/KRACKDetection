@@ -69,21 +69,27 @@ class ScapyPlaybook():
         self.interface      = interface
 
     def run(self):
+        #print "Starting run routine"
         for play in self.play_list:
             #sr1 is used only for layer 3 (IP, ARP, etc).  Returns only one response packet
             if play["MODE"] == 0:
+                #print "Sending Packet"
                 response = sr1(play["PACKET"])
                 play["HANDLER"](response)
             elif play["MODE"] == 1:
-                if play["FILTER"] is not None:
-                    sniff(filter=play["FILTER"], iface="lo", prn=play["HANDLER"])
-                else:
-                    sniff(filter="", iface="lo")
+                #print "Sniffing Packet"
+                #The filter SHOULD BE USED, as a count must be used to prevent inifinite running
+                try:
+                    sniff(filter=play["FILTER"], iface=self.interface, count=1, prn=play["HANDLER"])
+                except KeyError:
+                    sniff(iface=self.interface, count=1, prn=play["HANDLER"])
 
     def addPlay(self, play):
         if play and play["MODE"]:
             if (play["MODE"] == 0 and play["PACKET"] and play["HANDLER"]) or (play["MODE"] == 1 and play["HANDLER"]):
+		#print "Added play"
                 self.play_list.append(play)
+        #print "Ending addPlay routine"
 
     def filterPacket(self, packet):
         if packet and packet.haslayer(Dot11):
@@ -113,7 +119,11 @@ class ScapyPlaybook():
             if count == 10:
                 break
 
+def printPacket(p):
+    print p
+
 if __name__ == "__main__":
+    """
     #Flag definitions. Format (Type, Subtype)
     flags = []
     #Type Management, Subtype Probe Request => 802.11 Probe Request
@@ -124,3 +134,9 @@ if __name__ == "__main__":
 
     play = ScapyPlaybook(flags, "lo")
     play.readPCAP("example-ft.pcapng")
+    """
+    #Just a quick test. Uses the defualt ethernet interface for Debian 9
+    play_book = ScapyPlaybook([], "enp0s3")
+    play = {"MODE":1, "HANDLER":printPacket}
+    play_book.addPlay(play)
+    play_book.run()
