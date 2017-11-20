@@ -4,7 +4,7 @@ from scapy.all import *
 Need to analyze the 802.11 layer (referred to as Dot11 in scapy).
 Packet layout described here: http://www.studioreti.it/slide/802-11-Frame_E_C.pdf
 
-RELATED SCAPY MODES
+RELATED SCAPY MODES (Probably easiest to rely on the type/subtype fields?)
     Dot11           : <member 'name' of 'Packet' objects>
     Dot11ATIM       : <member 'name' of 'Packet' objects>
     Dot11AssoReq    : <member 'name' of 'Packet' objects>
@@ -62,7 +62,7 @@ dst=127.0.0.1 options='' |<ICMP  type=echo-reply code=0 chksum=0xffff id=0x0 seq
 """
 
 class ScapyPlaybook():
-    def __init__(self, flags, interface):
+    def __init__(self, flags=[], interface="lo"):
         #Put stuff here
         self.play_list      = []
         self.allowed_flags  = flags
@@ -85,10 +85,25 @@ class ScapyPlaybook():
                     sniff(iface=self.interface, count=1, prn=play["HANDLER"])
 
     def addPlay(self, play):
-        if play and play["MODE"]:
-            if (play["MODE"] == 0 and play["PACKET"] and play["HANDLER"]) or (play["MODE"] == 1 and play["HANDLER"]):
-		#print "Added play"
-                self.play_list.append(play)
+        #Protect against KeyErrors
+	try:
+            if play and play["MODE"]:
+                try:
+                    if (play["MODE"] == 0 and play["PACKET"] and play["HANDLER"]):
+                        print "Added play"
+                        self.play_list.append(play)
+                except KeyError:
+                    pass
+
+                try:
+                    if (play["MODE"] == 1 and play["HANDLER"]):
+		        print "Added play"
+                        self.play_list.append(play)
+                except KeyError:
+                    pass
+
+        except KeyError:
+            pass
         #print "Ending addPlay routine"
 
     def filterPacket(self, packet):
@@ -113,7 +128,7 @@ class ScapyPlaybook():
         count = 0
 
         for packet in captures:
-            packet.show()
+            #packet.show()
             self.filterPacket(packet)
             count+=1
             if count == 10:
@@ -123,7 +138,7 @@ def printPacket(p):
     print p
 
 if __name__ == "__main__":
-    """
+    #"""
     #Flag definitions. Format (Type, Subtype)
     flags = []
     #Type Management, Subtype Probe Request => 802.11 Probe Request
@@ -136,7 +151,8 @@ if __name__ == "__main__":
     play.readPCAP("example-ft.pcapng")
     """
     #Just a quick test. Uses the defualt ethernet interface for Debian 9
-    play_book = ScapyPlaybook([], "enp0s3")
+    play_book = ScapyPlaybook(interface="enp0s3")
     play = {"MODE":1, "HANDLER":printPacket}
     play_book.addPlay(play)
     play_book.run()
+    """

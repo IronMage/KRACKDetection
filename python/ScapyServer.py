@@ -31,7 +31,7 @@ CVE List
 
 PACKET BUILDING NOTES:
 [From Scapy FAQs]
-I can’t ping 127.0.0.1. Scapy does not work with 127.0.0.1 or on the loopback interface
+I can't ping 127.0.0.1. Scapy does not work with 127.0.0.1 or on the loopback interface
 ---------------------------------------------------------------------------------------------------------
 The loopback interface is a very special interface. Packets going through it are not really 
 assembled and disassembled. The kernel routes the packet to its destination while it is still 
@@ -53,8 +53,30 @@ dst=127.0.0.1 options='' |<ICMP  type=echo-reply code=0 chksum=0xffff id=0x0 seq
 class ScapyServer():
     def __init__(self):
         #Build ScapyPlaybooks here
-        playbook_list = []
-        playboook_list.append(scapyPlaybook(Params, For, P1))
+        self.playbook_list = []
+    
+    def addPlaybook(self, pb):
+        self.playbook_list.append(pb)
 
-    def runPlaybook(self):
-        #put stuff here
+    def run(self):
+        for pb in self.playbook_list:
+            pb.run()
+
+def printPacket(p):
+    print p
+
+if __name__ == "__main__":
+    #Example setup for creating a server with a single playbook and that playbook with a single play
+    serv = ScapyServer()
+    #Default interface is "lo", but I use the ethernet just to make sure there is some traffic to find
+    pb = ScapyPlaybook(interface="enp0s3")
+    play = {"MODE":1, "HANDLER":printPacket}
+    pb.addPlay(play)
+    serv.addPlaybook(pb)
+    serv.run()
+
+
+
+
+
+
