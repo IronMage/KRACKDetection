@@ -35,7 +35,7 @@ NOTE:
 
 PLAY FUNCTIONALITY:
     LAYOUT (DICTIONARY?):
-        MODE        : Send or Recv (0 or 1)
+        MODE        : Send(0) or Rcv(1)
         FILTER      : RECV ONLY (OPTIONAL) -- Used to define filter for sniffing
         PACKET      : SEND ONLY -- Packet to be sent to interface
         HANDLER     : Function to handle the response after sending packet
