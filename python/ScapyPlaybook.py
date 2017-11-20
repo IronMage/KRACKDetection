@@ -128,7 +128,7 @@ class ScapyPlaybook():
         count = 0
 
         for packet in captures:
-            #packet.show()
+            packet.show()
             self.filterPacket(packet)
             count+=1
             if count == 10:
