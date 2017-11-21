@@ -73,7 +73,7 @@ class ScapyPlaybook():
         for play in self.play_list:
             #sr1 is used only for layer 3 (IP, ARP, etc).  Returns only one response packet
             if play["MODE"] == 0:
-                #print "Sending Packet"
+                print "Sending Packet"
                 response = sr1(play["PACKET"])
                 play["HANDLER"](response)
             elif play["MODE"] == 1:
@@ -85,26 +85,15 @@ class ScapyPlaybook():
                     sniff(iface=self.interface, count=1, prn=play["HANDLER"])
 
     def addPlay(self, play):
-        #Protect against KeyErrors
-	try:
-            if play and play["MODE"]:
-                try:
-                    if (play["MODE"] == 0 and play["PACKET"] and play["HANDLER"]):
+        print play
+        if play and "MODE" in play:
+            if (play["MODE"] == 0 and ("PACKET" in play) and ("HANDLER" in play)):
                         print "Added play"
                         self.play_list.append(play)
-                except KeyError:
-                    pass
-
-                try:
-                    if (play["MODE"] == 1 and play["HANDLER"]):
+            if (play["MODE"] == 1 and ("HANDLER" in play)):
 		        print "Added play"
                         self.play_list.append(play)
-                except KeyError:
-                    pass
-
-        except KeyError:
-            pass
-        #print "Ending addPlay routine"
+        print "Ending addPlay routine"
 
     def filterPacket(self, packet):
         if packet and packet.haslayer(Dot11):
@@ -136,9 +125,11 @@ class ScapyPlaybook():
 
 def printPacket(p):
     print p
+def nothing(p):
+    print ""
 
 if __name__ == "__main__":
-    #"""
+    """
     #Flag definitions. Format (Type, Subtype)
     flags = []
     #Type Management, Subtype Probe Request => 802.11 Probe Request
@@ -150,9 +141,26 @@ if __name__ == "__main__":
     play = ScapyPlaybook(flags, "lo")
     play.readPCAP("example-ft.pcapng")
     """
+    """
     #Just a quick test. Uses the defualt ethernet interface for Debian 9
     play_book = ScapyPlaybook(interface="enp0s3")
     play = {"MODE":1, "HANDLER":printPacket}
     play_book.addPlay(play)
     play_book.run()
     """
+
+    pb = ScapyPlaybook()
+
+    while(True):
+        mode = raw_input("Enter 0 for send mode, 1 for recv mode")
+        mode = int(mode)
+        if(mode == 0 or 1):
+            break
+
+    if(mode == 0):
+        play = {"MODE":mode, "HANDLER":nothing, "PACKET":(IP(dst="127.0.0.1")/ICMP())}
+    else:
+        play = {"MODE":mode, "HANDLER":printPacket}
+
+    pb.addPlay(play)
+    pb.run()
