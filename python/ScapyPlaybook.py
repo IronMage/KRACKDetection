@@ -67,6 +67,9 @@ class ScapyPlaybook():
         self.play_list      = []
         self.allowed_flags  = flags
         self.interface      = interface
+        if interface == "lo":
+            print "Setting up socket for loopback"
+            conf.L3Socket=L3RawSocket
 
     def run(self):
         #print "Starting run routine"
