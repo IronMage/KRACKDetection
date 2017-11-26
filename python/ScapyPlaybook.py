@@ -35,10 +35,12 @@ NOTE:
 
 PLAY FUNCTIONALITY:
     LAYOUT (DICTIONARY?):
-        MODE        : Send(0) or Rcv(1)
-        FILTER      : RECV ONLY (OPTIONAL) -- Used to define filter for sniffing
-        PACKET      : SEND ONLY -- Packet to be sent to interface
-        HANDLER     : Function to handle the response after sending packet
+        FILTER      : FIRST PACKET ONLY OPTIONAL -- Used to define filter for sniffing
+        PACKET      : ALL BUT FIRST PACKET -- Packet to be sent to interface. If included
+                                              in the first packet, it will do an sr1 instead
+                                              of a sniff.
+        CHECKER     : OPTIONAL -- Will be run after rcving a response. Return True
+                                  to continue processing. False to halt.
 
 PACKET BUILDING NOTES:
 [From Scapy FAQs]
@@ -65,38 +67,60 @@ class ScapyPlaybook():
     def __init__(self, flags=[], interface="lo"):
         #Put stuff here
         self.play_list      = []
+        self.play_counter   = 0
         self.allowed_flags  = flags
         self.interface      = interface
         if interface == "lo":
             print "Setting up socket for loopback"
             conf.L3Socket=L3RawSocket
+            
+    def runNextPlay(self):
+        if self.play_counter < len(self.play_list):
+            next_play = self.play_list[self.play_counter]
+            resp = sr1(next_play["PACKET"])
+            if "CHECK" in next_play:
+                print "Running response check"
+                return next_play["CHECK"](resp)
+            print "Ran play"
+            return True
+        print "Play index out of bounds"
+        return False               
 
     def run(self):
         #print "Starting run routine"
-        for play in self.play_list:
-            #sr1 is used only for layer 3 (IP, ARP, etc).  Returns only one response packet
-            if play["MODE"] == 0:
-                print "Sending Packet"
-                response = sr1(play["PACKET"])
-                play["HANDLER"](response)
-            elif play["MODE"] == 1:
-                #print "Sniffing Packet"
-                #The filter SHOULD BE USED, as a count must be used to prevent inifinite running
-                try:
-                    sniff(filter=play["FILTER"], iface=self.interface, count=1, prn=play["HANDLER"])
-                except KeyError:
-                    sniff(iface=self.interface, count=1, prn=play["HANDLER"])
+        play = self.play_list[0]
+        self.play_counter = 1
+        
+        if "PACKET" in play:
+            self.play_counter = 0
+            print "Skipping initial sniff"
+            
+        else:
+            print "Sniffing"
+            if "FILTER" in play:
+                if "CHECK" in play:
+                    sniff(filter=play["FILTER"], iface=self.interface, count=1, prn=play["CHECK"])
+                else:
+                    sniff(filter=play["FILTER"], iface=self.interface, count=1)
+            
+            elif "CHECK" in play:
+                sniff(iface=self.interface, count=1, prn=play["CHECK"])
+            
+            else:
+                sniff(iface=self.interface, count=1)
+        
+        while(self.play_counter < len(self.play_list) and self.runNextPlay()):
+            self.play_counter += 1
+            
+        print "Run finished"
 
     def addPlay(self, play):
-        print play
-        if play and "MODE" in play:
-            if (play["MODE"] == 0 and ("PACKET" in play) and ("HANDLER" in play)):
-                        print "Added play"
-                        self.play_list.append(play)
-            if (play["MODE"] == 1 and ("HANDLER" in play)):
-		        print "Added play"
-                        self.play_list.append(play)
-        print "Ending addPlay routine"
+        #print play
+        if play:
+            if len(self.play_list) == 0:
+                self.play_list.append(play)
+            elif "PACKET" in play:
+                self.play_list.append(play)
 
     def filterPacket(self, packet):
         if packet and packet.haslayer(Dot11):
@@ -133,6 +157,7 @@ def nothing(p):
 
 if __name__ == "__main__":
     """
+    THESE ARE OUT OF DATE.  SEE WPA.PY FILE FOR EXAMPLES
     #Flag definitions. Format (Type, Subtype)
     flags = []
     #Type Management, Subtype Probe Request => 802.11 Probe Request
@@ -150,12 +175,11 @@ if __name__ == "__main__":
     play = {"MODE":1, "HANDLER":printPacket}
     play_book.addPlay(play)
     play_book.run()
-    """
 
     pb = ScapyPlaybook()
 
     while(True):
-        mode = raw_input("Enter 0 for send mode, 1 for recv mode")
+        mode = raw_input("Enter 0 for send mode, 1 for recv mode, 2 for sendrcv")
         mode = int(mode)
         if(mode == 0 or 1):
             break
@@ -167,3 +191,5 @@ if __name__ == "__main__":
 
     pb.addPlay(play)
     pb.run()
+    
+    """

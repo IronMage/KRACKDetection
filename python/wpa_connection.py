@@ -1,7 +1,8 @@
 from ScapyPlaybook import *
 
-def handle_beacon_resp(p):
-    hexdump(p)
+def handle_probe_req(p):
+    p.show2()
+    return True
 
 def main():
     """
@@ -21,8 +22,6 @@ def main():
     print "Starting"
     pb = ScapyPlaybook()
     
-    SEND          = 0
-    RCV           = 1
     broadcast_mac = 'ff:ff:ff:ff:ff:ff'
     my_mac        = '22:22:22:22:22:22'
     my_ssid       = 'KRACKDetection'
@@ -46,7 +45,8 @@ def main():
     '\x00\x00'))            #RSN Capabilities (no extra)
     
     pkt = RadioTap()/dot11/beacon/essid/rsn
-    play_BeaconFrame = {"MODE":SEND, "HANDLER": handle_beacon_resp, "PACKET":pkt}
+    pkt.show()
+    play_BeaconFrame  = {"PACKET":pkt, "CHECK":handle_probe_req}
     
     print "Adding play"
     pb.addPlay(play_BeaconFrame)
