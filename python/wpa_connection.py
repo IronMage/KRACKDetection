@@ -1,7 +1,10 @@
 from ScapyPlaybook import *
 
+response = None
+
 def handle_probe_req(p):
     p.show2()
+    response = p
     return True
 
 def main():
@@ -20,7 +23,7 @@ def main():
     play10_4WayMsg4
     """
     print "Starting"
-    pb = ScapyPlaybook()
+    pb = ScapyPlaybook(interface="lo")
     
     broadcast_mac = 'ff:ff:ff:ff:ff:ff'
     my_mac        = '22:22:22:22:22:22'
@@ -45,7 +48,7 @@ def main():
     '\x00\x00'))            #RSN Capabilities (no extra)
     
     pkt = RadioTap()/dot11/beacon/essid/rsn
-    pkt.show()
+    #pkt.show()
     play_BeaconFrame  = {"PACKET":pkt, "CHECK":handle_probe_req}
     
     print "Adding play"
@@ -53,14 +56,8 @@ def main():
     print "Running"
     pb.run()
     print "Done"
-    
-    
-    
-    
-    
-    
-    
-    
+    hexdump(response)
+    print (pkt == response) 
     
     
 if __name__ == '__main__':
