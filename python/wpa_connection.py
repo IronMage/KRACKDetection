@@ -51,6 +51,8 @@ def main():
     #pkt.show()
     play_BeaconFrame  = {"PACKET":pkt, "CHECK":handle_probe_req}
     
+    sendp(pkt, iface="lo", inter=0.1, loop=1)
+    """
     print "Adding play"
     pb.addPlay(play_BeaconFrame)
     print "Running"
@@ -58,7 +60,7 @@ def main():
     print "Done"
     hexdump(response)
     print (pkt == response) 
-    
+    """
     
 if __name__ == '__main__':
     main()

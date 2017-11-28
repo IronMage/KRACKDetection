@@ -77,7 +77,7 @@ class ScapyPlaybook():
     def runNextPlay(self):
         if self.play_counter < len(self.play_list):
             next_play = self.play_list[self.play_counter]
-            resp = sr1(next_play["PACKET"])
+            resp = sr1(next_play["PACKET"], iface=self.interface)
             if "CHECK" in next_play:
                 print "Running response check"
                 return next_play["CHECK"](resp)
