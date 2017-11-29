@@ -8,11 +8,11 @@ nice_list = {"FT: Do not re-install same PTK to the driver" : "CVE-2017-13077", 
       "WPA: Not reinstalling already in-use IGTK to the driver" : "CVE-2017-13081", #0002
       "WPA: Invalid IGTK KeyID" : "CVE-2017-13081", #0002
       "Failed to configure IGTK to the driver" : "CVE-2017-13081", #0002
-      "WPA: Failed to get random data for ANonce" : "CVE-2017-", #0005
-      "WPA: Assign new ANonce" : "CVE-2017-", #0005
+      "WPA: Failed to get random data for ANonce" : "CVE-2017-#", #0005
+      "WPA: Assign new ANonce" : "CVE-2017-#", #0005
       "TDLS: TPK-TK for the peer" : "CVE-2017-13086", #0006
-      "TDLS: Configure pairwise key for peer" : "CVE-2017-", #0006
-      "has already been configrued to the driver - do not reconfigure" : "CVE-2017-#", #0006
+      "TDLS: Configure pairwise key for peer" : "CVE-2017-CVE-2017-13086", #0006
+      "has already been configrued to the driver - do not reconfigure" : "CVE-2017-13086", #0006
       "WNM: Ignore WNM-Sleep Mode Response frame since WNM-Sleep Mode operation has not been requested" : "CVE-2017-13088", #0007
       "FT: Reassociation has already been completed for this FT protocol instance - ignore unexpected retransmission" : "CVE-2017-13082", #0008
       }
